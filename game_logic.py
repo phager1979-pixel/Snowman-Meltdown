@@ -1,5 +1,8 @@
 from ascii_art import STAGES
+from ascii_art import VICTORY
+
 import random
+import time
 
 # List of secret words
 WORDS = ["python", "git", "github", "snowman", "meltdown"]
@@ -29,9 +32,20 @@ def update_game_screen(wrong_guess, guessed_word):
     print(STAGES[wrong_guess])
     print("Word: " + " ".join(guessed_word))
 
+def firework():
 
+    victory_stage = 0
+    while victory_stage < len(VICTORY):
+        print(VICTORY[victory_stage])
+        victory_stage +=1
+        time.sleep(0.25)
 
-
+def new_game():
+    next_round = input("Do you want to play again? Y / N   :")
+    if next_round.lower() == "y":
+        play_game()
+    else:
+        print("Thanks for playing - see you later !")
 
 
 def play_game():
@@ -45,20 +59,30 @@ def play_game():
 
     guessed_word = create_guessed_word(secret_word)
 
-    while wrong_guess < len(STAGES):
+    while wrong_guess < len(STAGES) - 1:
         update_game_screen(wrong_guess, guessed_word)
 
-        if is_word_guessed(guessed_word, secret_word):
-            print("Congratulations, you saved the snowman!")
-            return
-
         guess = input("Guess a letter: ").lower()
+
+
+        if guess.isalpha() == False or len(guess) > 1:
+            print("Please only enter valid letter.")
+            continue
 
         if guess in guessed_letters:
             print("You already guessed that letter.")
             continue
-        guessed_letters.add(guess)
 
+        guessed_letters.add(guess)
         guessed_word, wrong_guess = update_guessed_word(guess, secret_word, guessed_word, wrong_guess)
 
-    print(f"You lost! The word was: {secret_word}")
+        if is_word_guessed(guessed_word, secret_word):
+            firework()
+            print("Congratulations, you saved the snowman!")
+            break
+
+    else:
+        update_game_screen(wrong_guess, guessed_word)
+        print(f"You lost! The word was: {secret_word}")
+
+    new_game()
